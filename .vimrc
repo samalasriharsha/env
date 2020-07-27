@@ -6,23 +6,37 @@ Plug 'junegunn/fzf.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'gko/vim-coloresque'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'Quramy/tsuquyomi'
+Plug 'jreybert/vimagit'
+Plug 'NLKNguyen/papercolor-theme'
+
+Plug 'tpope/vim-fugitive'
+Plug 'vim-syntastic/syntastic'
+Plug 'juliosueiras/vim-terraform-completion'
 
 Plug 'rust-lang/rust.vim'
+Plug 'leafgarland/typescript-vim'
+Plug 'hashivim/vim-terraform'
 call plug#end()
 
 set number
 set relativenumber
 
 set ruler
-set tabstop=4
+set tabstop=2
 set expandtab
-set shiftwidth=4
+set shiftwidth=2
 set autoindent
 set smartindent
 set clipboard=unnamedplus
 
 set termguicolors
 set signcolumn=no
+
+set t_Co=256   " This is may or may not needed.
+
+set background=light
+colorscheme PaperColor
 " TextEdit might fail if hidden is not set.
 set hidden
 
