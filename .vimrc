@@ -10,6 +10,7 @@ Plug 'Quramy/tsuquyomi'
 Plug 'jreybert/vimagit'
 Plug 'NLKNguyen/papercolor-theme'
 
+Plug 'dense-analysis/ale'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-syntastic/syntastic'
 Plug 'juliosueiras/vim-terraform-completion'
@@ -33,9 +34,12 @@ set clipboard=unnamedplus
 set termguicolors
 set signcolumn=no
 
+set swapfile
+set dir=~/.vim/tmp
+
 set t_Co=256   " This is may or may not needed.
 
-set background=light
+set background=dark
 colorscheme PaperColor
 " TextEdit might fail if hidden is not set.
 set hidden
