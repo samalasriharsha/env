@@ -1,0 +1,20 @@
+{
+  "diagnostic.errorSign": "✖",
+  "diagnostic.warningSign": "⚑",
+  "diagnostic.infoSign": "⚑",
+  "diagnostic.hintSign": "⚑",
+  "coc.preferences.formatOnSaveFiletypes": [
+    "rust",
+    "javascript",
+    "typescript",
+    "json"
+  ],
+  "coc.preferences.formatOnType": true,
+  "coc.preferences.jumpCommand": "drop",
+  "tsserver.formatOnType": true,
+  "rust-analyzer.inlayHints.refreshOnInsertMode": true,
+  "rust-analyzer.diagnostics.enableExperimental": false,
+  "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.lens.methodReferences": true
+}
