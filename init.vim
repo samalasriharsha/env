@@ -1,46 +1,83 @@
 call plug#begin()
-Plug 'tpope/vim-sensible'
-Plug 'frazrepo/vim-rainbow'
-Plug 'itchyny/lightline.vim'
-Plug 'junegunn/fzf.vim'
-Plug 'jiangmiao/auto-pairs'
-Plug 'gko/vim-coloresque'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'Quramy/tsuquyomi'
-Plug 'jreybert/vimagit'
-Plug 'NLKNguyen/papercolor-theme'
+Plug 'dag/vim-fish'
 
-Plug 'dense-analysis/ale'
-Plug 'tpope/vim-fugitive'
-Plug 'vim-syntastic/syntastic'
-Plug 'juliosueiras/vim-terraform-completion'
+Plug 'preservim/nerdtree'
+
+Plug 'jiangmiao/auto-pairs'
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+
+Plug 'ayu-theme/ayu-vim'
+
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'rafi/awesome-vim-colorschemes'
+Plug 'joshdick/onedark.vim'
+Plug 'sonph/onehalf', { 'rtp': 'vim' }
+
+" Plug 'itchyny/lightline.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 Plug 'rust-lang/rust.vim'
-Plug 'leafgarland/typescript-vim'
-Plug 'hashivim/vim-terraform'
+
+Plug 'ron-rs/ron'
+
+Plug 'elzr/vim-json'
+
+Plug 'cespare/vim-toml'
+
+Plug 'HerringtonDarkholme/yats.vim'
+Plug 'mhartington/nvim-typescript', {'do': './install.sh'}
+" Plug 'leafgarland/typescript-vim'
+Plug 'pangloss/vim-javascript'
+Plug 'ruanyl/vim-sort-imports'
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc-highlight'
+
 call plug#end()
+
+set tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
 
 set number
 set relativenumber
 
-set ruler
-set tabstop=2
-set expandtab
-set shiftwidth=2
-set autoindent
-set smartindent
+set swapfile
+set dir=~/.nvim/tmp
+
 set clipboard=unnamedplus
 
 set termguicolors
-set signcolumn=no
+set t_Co=256
 
-set swapfile
-set dir=~/.vim/tmp
+" set background=light
+colorscheme onehalflight
 
-set t_Co=256   " This is may or may not needed.
+let g:airline_theme='onehalflight'
 
-set background=dark
-colorscheme PaperColor
+
+set smartindent
+
+" let g:lightline = {
+" 	\ 'colorscheme': 'one',
+" 	\ }
+
+" enable auto sort import on write
+let g:import_sort_auto = 1
+
+syntax enable
+filetype plugin indent on
+
+hi Normal guibg=NONE ctermbg=NONE
+hi NonText guibg=NONE ctermbg=NONE
+hi LineNr guibg=NONE ctermbg=NONE
+hi SignColumn guibg=NONE ctermbg=NONE
+hi EndOfBuffer guibg=NONE ctermbg=NONE
+
 " TextEdit might fail if hidden is not set.
 set hidden
 
@@ -67,6 +104,17 @@ else
   set signcolumn=yes
 endif
 
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Keybinding for NERDTreeToggle
+nmap <C-Up> :NERDTreeToggle<Enter>
+
+" Keybinding for FZF + RipGrep
+nmap <silent> ?? :Rg!<Enter> 
+
+" Auto import vim-typescript
+nmap <silent> tt :TSGetCodeFix<Enter>
+
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
@@ -82,16 +130,16 @@ function! s:check_back_space() abort
 endfunction
 
 " Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
-" position. Coc only does snippet and additional edit on confirm.
-" <cr> could be remapped by other vim plugin, try `:verbose imap <CR>`.
-if exists('*complete_info')
-  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
 else
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  inoremap <silent><expr> <c-@> coc#refresh()
 endif
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
@@ -100,6 +148,7 @@ nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gD :vs<CR><Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
@@ -110,8 +159,10 @@ nnoremap <silent> K :call <SID>show_documentation()<CR>
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
   else
-    call CocAction('doHover')
+    execute '!' . &keywordprg . " " . expand('<cword>')
   endif
 endfunction
 
@@ -154,8 +205,22 @@ omap ic <Plug>(coc-classobj-i)
 xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
 
+" Remap <C-f> and <C-b> for scroll float windows/popups.
+" Note coc#float#scroll works on neovim >= 0.4.0 or vim >= 8.2.0750
+nnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+nnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+inoremap <nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+inoremap <nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+
+" NeoVim-only mapping for visual mode scroll
+" Useful on signatureHelp after jump placeholder of snippet expansion
+if has('nvim')
+  vnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#nvim_scroll(1, 1) : "\<C-f>"
+  vnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#nvim_scroll(0, 1) : "\<C-b>"
+endif
+
 " Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of LS, ex: coc-tsserver
+" Requires 'textDocument/selectionRange' support of language server.
 nmap <silent> <C-s> <Plug>(coc-range-select)
 xmap <silent> <C-s> <Plug>(coc-range-select)
 
